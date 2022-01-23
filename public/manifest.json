@@ -21,8 +21,5 @@
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#000000",
-  "background_color": "#ffffff",
-  "externally_connectable" : {
-    "matches": [ "http://127.0.0.1" ]
-  }
+  "background_color": "#ffffff"
 }

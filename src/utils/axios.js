@@ -1,1 +1,0 @@
-export const serveraddr = 'http://localhost:16273';
