@@ -2,15 +2,21 @@ import React, { useState } from 'react';
 import { ProgressBar } from 'react-bootstrap';
 import 'react-dropzone-uploader/dist/styles.css';
 import Dropzone from "react-dropzone-uploader";
+import './App.css';
 
 const App: React.FC = () => {
-
+  let totalsize = 0;
+  let currentsize = 0;
   const [filesToUpload, setFilesToUpload] = useState([] as FileToUpload[]);
   const [progress, setProgress] = useState(0);
 
   const DrophandleSubmit = (files: any, allFiles: any) => {
     let filesToUpload: FileToUpload[] = [];
+    totalsize = 0;
+    currentsize = 0;
+    setProgress(0);
     for (let i = 0; i < allFiles.length; i++) {
+        totalsize += allFiles[i].file.size;
       filesToUpload.push(new FileToUpload(allFiles[i].file, allFiles[i].file.name));
     }
 
@@ -49,7 +55,10 @@ const App: React.FC = () => {
 
       this.request.onload = () => {
         const remainingBytes = this.file.size - this.currentChunkFinalByte;
-        setProgress(Math.round((this.currentChunkFinalByte * 100) / this.file.size));
+        currentsize += FileToUpload.chunkSize;
+        if (currentsize > totalsize) currentsize = totalsize;
+        // console.log(currentsize, totalsize, "percentage");
+        setProgress(Math.round((currentsize * 100) / totalsize));
         if (this.currentChunkFinalByte === this.file.size) {
           return;
         } else if (remainingBytes < FileToUpload.chunkSize) {
@@ -78,8 +87,12 @@ const App: React.FC = () => {
     const files: FileList | null = e.target.files;
     if (!files) return;
     let filesToUpload: FileToUpload[] = [];
+    totalsize = 0;
+    currentsize = 0;
+    setProgress(0);
     for (let i = 0; i < files.length; i++) {
-      filesToUpload.push(new FileToUpload(files[i], files[i].name));
+        totalsize += files[i].size;
+        filesToUpload.push(new FileToUpload(files[i], files[i].name));
     }
 
     setFilesToUpload(filesToUpload);
@@ -109,14 +122,19 @@ const App: React.FC = () => {
             <input type="submit" value="submit" />
           </div>
           <div className='mt-3' />
-          {progress !== 0 && <ProgressBar animated now={progress} label={`${progress}%`} />}
         </form>
-        <div className='mt-3' />
-        <Dropzone
-          multiple
-          accept="*"
-          onSubmit={DrophandleSubmit}
-        />
+        <div className='mx-auto mt-4' style={{ maxWidth: "600px", maxHeight: "800px"}}>
+          {progress !== 0 && <ProgressBar animated now={progress} label={`${progress}%`} />}
+            <Dropzone
+            multiple
+            accept="*"
+            onSubmit={DrophandleSubmit}
+            maxFiles={3}
+            inputContent="Drop 3 Files"
+            inputWithFilesContent={files => `${3 - files.length} more`}
+            submitButtonDisabled={files => files.length < 3}
+            />
+        </div>
       </div>
     </div>
   )
