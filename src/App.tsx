@@ -9,10 +9,16 @@ const App: React.FC = () => {
     const [filesToUpload, setFilesToUpload] = useState([] as FileToUpload[]);
     const [progress, setProgress] = useState(0);
 
-    const handleChangeStatus = (inputfile: any ) => {
-         let filesToUpload: FileToUpload[] = [];
-         filesToUpload.push(new FileToUpload(inputfile.file, inputfile.file.name));
-         setFilesToUpload(filesToUpload);
+    const DrophandleSubmit = (files: any, allFiles: any) => {
+        let filesToUpload: FileToUpload[] = [];
+        for (let i = 0; i < allFiles.length; i++) {
+            filesToUpload.push(new FileToUpload(allFiles[i].file, allFiles[i].file.name));
+        }
+
+        setProgress(1);
+        for (let i = 0; i < filesToUpload.length; i++) {
+            filesToUpload[i].uploadFile();
+        }
     }
 
     class FileToUpload {
@@ -104,11 +110,14 @@ const App: React.FC = () => {
                     <div className="upload-submit">
                         <input type="submit" value="submit"/>
                     </div>
+                    <div className='mt-3'/>
                     { progress != 0 && <ProgressBar animated now={progress} label={`${progress}%`} />}
                 </form>
+                <div className='mt-3'/>
                 <Dropzone
-                    onChangeStatus={handleChangeStatus}
-                    accept="*"
+                   multiple
+                   accept="*"
+                   onSubmit={DrophandleSubmit}
                 />
             </div>
         </div>    
@@ -117,3 +126,7 @@ const App: React.FC = () => {
 
 App.displayName = 'UploadMedia';
 export default App;
+function FormEvent<T>(): React.FormEvent<HTMLFormElement> {
+    throw new Error('Function not implemented.');
+}
+
