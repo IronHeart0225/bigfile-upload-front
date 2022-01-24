@@ -1,11 +1,19 @@
 import React, { useState } from 'react';
 import './App.css';
 import { ProgressBar } from 'react-bootstrap';
+import 'react-dropzone-uploader/dist/styles.css';
+import Dropzone from "react-dropzone-uploader";
 
 const App: React.FC = () => {
 
     const [filesToUpload, setFilesToUpload] = useState([] as FileToUpload[]);
     const [progress, setProgress] = useState(0);
+
+    const handleChangeStatus = (inputfile: any ) => {
+         let filesToUpload: FileToUpload[] = [];
+         filesToUpload.push(new FileToUpload(inputfile.file, inputfile.file.name));
+         setFilesToUpload(filesToUpload);
+    }
 
     class FileToUpload {
         //static chunkSize = 100000000;  // 100 Mb 
@@ -36,7 +44,6 @@ const App: React.FC = () => {
             
             this.request.onload = () => {
                 const remainingBytes = this.file.size - this.currentChunkFinalByte;
-                console.log("percentage", this.file.size, this.currentChunkFinalByte);
                 setProgress(Math.round((this.currentChunkFinalByte * 100) / this.file.size));
                 if(this.currentChunkFinalByte === this.file.size) {
                     // alert('Yay, upload completed! Chao!');
@@ -66,7 +73,6 @@ const App: React.FC = () => {
     const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files: FileList | null = e.target.files;
         if(!files) return;
-
         let filesToUpload: FileToUpload[] = [];
         for (let i = 0; i < files.length; i++) {
             filesToUpload.push(new FileToUpload(files[i], files[i].name));
@@ -100,6 +106,10 @@ const App: React.FC = () => {
                     </div>
                     { progress != 0 && <ProgressBar animated now={progress} label={`${progress}%`} />}
                 </form>
+                <Dropzone
+                    onChangeStatus={handleChangeStatus}
+                    accept="*"
+                />
             </div>
         </div>    
     )
