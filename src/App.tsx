@@ -108,9 +108,9 @@ const App: React.FC = () => {
 
   return (
     <div className="App">
-      <h2 className="upload-title">File Uploader</h2>
+      <h2 className="upload-title my-4">File Uploader</h2>
       <div className="upload-form">
-        <form id="file_upload" onSubmit={onFormSubmit}>
+        <form id="file_upload" onSubmit={onFormSubmit} className="d-none">
           <div className="upload-file-select">
             <label htmlFor="file_1">Select files for upload</label>
             <input id="file_1" type="file" multiple onChange={onFileChange} />
